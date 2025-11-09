@@ -61,20 +61,26 @@ jobs:
                   --namespace=default \
                   --dry-run=client -o yaml | kubectl apply -f -
 
-            - name: Deploy to Kubernetes Cluster
-              uses: azure/k8s-deploy@v5
-              with:
-                namespace: default
-                manifests: |
-                  02-encontros-tech/k8s/manifest.yaml
-                images: gustavo1304/bootcamp-encontros-tech:v${{ github.run_number }}
-                strategy: basic
+            - name: Delete Existing Deployment (if stuck)
+              run: |
+                if kubectl get deployment encontros-tech -n default &> /dev/null; then
+                  echo "Deployment exists, deleting to start fresh..."
+                  kubectl delete deployment encontros-tech -n default --ignore-not-found=true
+                  sleep 5
+                fi
+              continue-on-error: true
 
-            - name: Update deployment image
+            - name: Apply Kubernetes Manifests
+              run: kubectl apply -f 02-encontros-tech/k8s/manifest.yaml --namespace=default
+
+            - name: Update Deployment Image
               run: |
                 kubectl set image deployment/encontros-tech \
                   encontros-tech=gustavo1304/bootcamp-encontros-tech:v${{ github.run_number }} \
-                  -n default
+                  --namespace=default --record
 
-            - name: Verify deployment rollout
-              run: kubectl rollout status deployment/encontros-tech -n default --timeout=5m
+            - name: Restart Deployment
+              run: kubectl rollout restart deployment/encontros-tech --namespace=default
+
+            - name: Wait for Rollout to Complete
+              run: kubectl rollout status deployment/encontros-tech --namespace=default --timeout=5m
