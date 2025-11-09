@@ -80,7 +80,7 @@ jobs:
         runs-on: ubuntu-latest
         needs: [CD-Homolog]
         environment:
-          name: production
+          name: producao
           url: http://143.244.201.33
         steps:
             - name: Checkout
