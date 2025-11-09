@@ -221,3 +221,7 @@ __marimo__/
 kubeconfig
 
 *.Identifier
+
+# Kubernetes Secrets (exceto exemplos)
+**/secret.yaml
+!**/secret.yaml.example
