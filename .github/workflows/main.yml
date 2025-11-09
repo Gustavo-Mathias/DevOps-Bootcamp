@@ -54,6 +54,13 @@ jobs:
                 method: kubeconfig
                 kubeconfig: ${{ secrets.KUBE_CONFIG }}
 
+            - name: Create or Update Database Secret
+              run: |
+                kubectl create secret generic encontros-tech-secrets \
+                  --from-literal=database-url="${{ secrets.DATABASE_URL }}" \
+                  --namespace=default \
+                  --dry-run=client -o yaml | kubectl apply -f -
+
             - name: Deploy to Kubernetes Cluster
               uses: azure/k8s-deploy@v5
               with:
@@ -62,3 +69,12 @@ jobs:
                   02-encontros-tech/k8s/manifest.yaml
                 images: gustavo1304/bootcamp-encontros-tech:v${{ github.run_number }}
                 strategy: basic
+
+            - name: Update deployment image
+              run: |
+                kubectl set image deployment/encontros-tech \
+                  encontros-tech=gustavo1304/bootcamp-encontros-tech:v${{ github.run_number }} \
+                  -n default
+
+            - name: Verify deployment rollout
+              run: kubectl rollout status deployment/encontros-tech -n default --timeout=5m
