@@ -7,7 +7,7 @@ metadata:
     app: encontros-tech
 spec:
   # Reduzido para 2 réplicas devido ao limite de conexões do banco de dados compartilhado
-  # Quando houver bancos separados para homolog e production, pode aumentar para 3
+  # Quando houver bancos separados para homolog e producao, pode aumentar para 3
   replicas: 2
   selector:
     matchLabels:

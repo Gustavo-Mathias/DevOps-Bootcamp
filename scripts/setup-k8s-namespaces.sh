@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script para configurar namespaces no Kubernetes para homolog e production
+# Script para configurar namespaces no Kubernetes para homolog e producao
 # Uso: ./scripts/setup-k8s-namespaces.sh
 
 set -e
@@ -25,12 +25,12 @@ fi
 echo ""
 
 # Criar namespace de produção
-echo -e "${YELLOW}Criando namespace 'production'...${NC}"
-if kubectl get namespace production &> /dev/null; then
-    echo -e "${GREEN}✓ Namespace 'production' já existe${NC}"
+echo -e "${YELLOW}Criando namespace 'proproducaoduction'...${NC}"
+if kubectl get namespace producao &> /dev/null; then
+    echo -e "${GREEN}✓ Namespace 'producao' já existe${NC}"
 else
-    kubectl create namespace production
-    echo -e "${GREEN}✓ Namespace 'production' criado com sucesso${NC}"
+    kubectl create namespace producao
+    echo -e "${GREEN}✓ Namespace 'producao' criado com sucesso${NC}"
 fi
 
 echo ""
@@ -49,10 +49,10 @@ echo "1. Configure os environments no GitHub:"
 echo "   https://github.com/Gustavo-Mathias/DevOps-Bootcamp/settings/environments"
 echo ""
 echo "2. Adicione os secrets em cada environment:"
-echo "   - DATABASE_URL (diferente para homolog e production)"
+echo "   - DATABASE_URL (diferente para homolog e producao)"
 echo "   - KUBE_CONFIG (pode ser o mesmo)"
 echo ""
-echo "3. Configure aprovação manual para o environment 'production'"
+echo "3. Configure aprovação manual para o environment 'producao'"
 echo ""
 echo "4. Faça commit e push para testar a pipeline"
 echo ""

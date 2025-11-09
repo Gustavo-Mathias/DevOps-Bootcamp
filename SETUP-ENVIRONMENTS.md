@@ -7,7 +7,7 @@ Este guia mostra como configurar os environments no GitHub e preparar o cluster 
 A pipeline agora está dividida em:
 - **CI**: Build, testes e push da imagem Docker
 - **CD-Homolog**: Deploy automático no ambiente de homologação
-- **CD-Production**: Deploy no ambiente de produção (requer aprovação manual)
+- **CD-producao**: Deploy no ambiente de produção (requer aprovação manual)
 
 Cada environment tem seus próprios secrets isolados, especialmente o `DATABASE_URL`.
 
@@ -32,10 +32,10 @@ Ou crie manualmente:
 kubectl create namespace homolog
 
 # Criar namespace de produção
-kubectl create namespace production
+kubectl create namespace producao
 
 # Verificar namespaces criados
-kubectl get namespaces | grep -E "(homolog|production)"
+kubectl get namespaces | grep -E "(homolog|producao)"
 ```
 
 ---
@@ -63,10 +63,10 @@ kubectl get namespaces | grep -E "(homolog|production)"
    - Name: `KUBE_CONFIG`
    - Value: (cole o conteúdo do seu kubeconfig - mesmo que o atual)
 
-### 2.3 - Criar Environment "production"
+### 2.3 - Criar Environment "producao"
 
 1. Clique em **New environment**
-2. Nome: `production`
+2. Nome: `producao`
 3. Clique em **Configure environment**
 4. **IMPORTANTE - Adicione proteção**:
    - ✅ Marque **Required reviewers**
@@ -106,7 +106,7 @@ Após configurar os environments, você **deve** remover o `DATABASE_URL` dos se
 
 ```bash
 git add .
-git commit -m "Configure environments for homolog and production"
+git commit -m "Configure environments for homolog and producao"
 git push
 ```
 
@@ -125,17 +125,17 @@ git push
 └─────────────┘
        ↓
 ┌─────────────┐
-│CD-Production│ ⏸️ Aguardando aprovação manual
+│CD-producao ⏸️ Aguardando aprovação manual
 └─────────────┘
 ```
 
 ### 4.3 - Aprovar deploy em produção
 
-1. Na página do workflow, você verá **"CD-Production is waiting"**
+1. Na página do workflow, você verá **"CD-producao is waiting"**
 2. Clique em **Review deployments**
-3. Marque a checkbox **production**
+3. Marque a checkbox **producao**
 4. Clique em **Approve and deploy**
-5. O deploy em produção será executado usando o `DATABASE_URL` do environment production
+5. O deploy em produção será executado usando o `DATABASE_URL` do environment producao
 
 ---
 
@@ -153,7 +153,7 @@ GitHub Repository
 │   ├── KUBE_CONFIG          ← Kubeconfig (opcional)
 │   └── Deployment Rules: Nenhuma (automático)
 │
-└── Environment: production
+└── Environment: producao
     ├── DATABASE_URL         ← Banco de produção
     ├── KUBE_CONFIG          ← Kubeconfig (opcional)
     └── Deployment Rules: Aprovação manual obrigatória
@@ -181,16 +181,16 @@ kubectl get deployment encontros-tech -n homolog -o jsonpath='{.spec.template.sp
 ### Produção
 ```bash
 # Ver todos os recursos
-kubectl get all -n production
+kubectl get all -n producao
 
 # Ver pods
-kubectl get pods -n production
+kubectl get pods -n producao
 
 # Ver logs
-kubectl logs -l app=encontros-tech -n production --tail=50
+kubectl logs -l app=encontros-tech -n producao --tail=50
 
 # Ver qual imagem está rodando
-kubectl get deployment encontros-tech -n production -o jsonpath='{.spec.template.spec.containers[0].image}'
+kubectl get deployment encontros-tech -n producao -o jsonpath='{.spec.template.spec.containers[0].image}'
 ```
 
 ---
@@ -208,10 +208,10 @@ environment:
   url: http://seu-ip-homolog  # ou domínio
 ```
 
-**Production** (linha 84):
+**producao** (linha 84):
 ```yaml
 environment:
-  name: production
+  name: producao
   url: http://129.212.196.133  # já configurado
 ```
 
@@ -222,7 +222,7 @@ environment:
 postgresql://appuser:dev_password@10.0.1.50:5432/encontros_tech_dev
 ```
 
-**Exemplo de DATABASE_URL para production:**
+**Exemplo de DATABASE_URL para producao:**
 ```
 postgresql://appuser:strong_prod_password@10.0.2.100:5432/encontros_tech_prod
 ```
@@ -240,20 +240,20 @@ kubectl delete svc encontros-tech -n default
 kubectl delete secret encontros-tech-secrets -n default
 ```
 
-**Opção B: Usar default como production**
-Altere o namespace `production` para `default` na pipeline (linha 64, 68, 74, 77).
+**Opção B: Usar default como producao**
+Altere o namespace `producao` para `default` na pipeline (linha 64, 68, 74, 77).
 
 ---
 
 ## ✅ Checklist de Configuração
 
-- [ ] Namespaces `homolog` e `production` criados no Kubernetes
+- [ ] Namespaces `homolog` e `producao` criados no Kubernetes
 - [ ] Environment `homolog` criado no GitHub
-- [ ] Environment `production` criado no GitHub
+- [ ] Environment `producao` criado no GitHub
 - [ ] Secret `DATABASE_URL` adicionado ao environment `homolog`
-- [ ] Secret `DATABASE_URL` adicionado ao environment `production`
+- [ ] Secret `DATABASE_URL` adicionado ao environment `producao`
 - [ ] Secret `KUBE_CONFIG` configurado (globalmente ou por environment)
-- [ ] Regra de aprovação configurada no environment `production`
+- [ ] Regra de aprovação configurada no environment `producao`
 - [ ] Secret global `DATABASE_URL` REMOVIDO do repositório
 - [ ] Teste de deploy realizado com sucesso
 - [ ] Deploy em homolog funcionando
@@ -276,12 +276,12 @@ Verifique se:
 
 ### Deploy não pede aprovação
 Verifique se:
-1. Marcou **Required reviewers** no environment `production`
+1. Marcou **Required reviewers** no environment `producao`
 2. Adicionou pelo menos um revisor (você mesmo)
 3. Salvou as configurações
 
 ### Pipeline falha com "couldn't find environment"
-1. Verifique se o nome do environment é exatamente `homolog` e `production` (case-sensitive)
+1. Verifique se o nome do environment é exatamente `homolog` e `producao` (case-sensitive)
 2. Aguarde alguns segundos - GitHub pode levar um tempo para propagar a criação
 
 ### KUBE_CONFIG não encontrado
@@ -296,7 +296,7 @@ Você pode:
 Devido ao **limite de conexões do banco de dados compartilhado**, as réplicas foram ajustadas:
 
 - **Homolog**: 1 réplica
-- **Production**: 2 réplicas
+- **producao**: 2 réplicas
 - **Total**: 3 pods conectando ao banco
 
 **Configurado no manifest**: `replicas: 2`
@@ -307,7 +307,7 @@ Devido ao **limite de conexões do banco de dados compartilhado**, as réplicas 
 1. Criar banco de dados separado para cada ambiente
 2. Configurar `DATABASE_URL` diferente em cada environment do GitHub:
    - Homolog: banco de desenvolvimento/staging
-   - Production: banco de produção
+   - producao: banco de produção
 3. Atualizar `replicas: 3` no manifest.yaml
 4. Fazer novo deploy
 
