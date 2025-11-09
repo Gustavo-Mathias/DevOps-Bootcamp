@@ -291,10 +291,38 @@ Você pode:
 
 ---
 
+## ⚠️ Configuração Atual de Réplicas
+
+Devido ao **limite de conexões do banco de dados compartilhado**, as réplicas foram ajustadas:
+
+- **Homolog**: 1 réplica
+- **Production**: 2 réplicas
+- **Total**: 3 pods conectando ao banco
+
+**Configurado no manifest**: `replicas: 2`
+
+### Como aumentar as réplicas no futuro
+
+**Opção 1: Configurar bancos separados (RECOMENDADO)**
+1. Criar banco de dados separado para cada ambiente
+2. Configurar `DATABASE_URL` diferente em cada environment do GitHub:
+   - Homolog: banco de desenvolvimento/staging
+   - Production: banco de produção
+3. Atualizar `replicas: 3` no manifest.yaml
+4. Fazer novo deploy
+
+**Opção 2: Upgrade do plano do banco**
+1. Aumentar o limite de conexões no DigitalOcean
+2. Atualizar `replicas: 3` no manifest.yaml
+3. Fazer novo deploy
+
+---
+
 ## 🎯 Próximos Passos (Opcional)
 
-1. **Configurar domínios**: Apontar DNS para os IPs dos LoadBalancers
-2. **HTTPS**: Adicionar certificados SSL com cert-manager
-3. **Monitoramento**: Configurar Prometheus/Grafana
-4. **Alertas**: Configurar notificações de deploy
-5. **Branch protection**: Configurar proteção da branch main
+1. **Bancos separados**: Criar banco de dados exclusivo para produção (RECOMENDADO)
+2. **Configurar domínios**: Apontar DNS para os IPs dos LoadBalancers
+3. **HTTPS**: Adicionar certificados SSL com cert-manager
+4. **Monitoramento**: Configurar Prometheus/Grafana
+5. **Alertas**: Configurar notificações de deploy
+6. **Branch protection**: Configurar proteção da branch main
