@@ -21,6 +21,7 @@ jobs:
                 pip install -r requirements.txt
             
             - name: Testes
+              working-directory: 02-encontros-tech
               run: python -m pytest tests/ -v  
                 
             - run: echo "Executar o Docker Build"
