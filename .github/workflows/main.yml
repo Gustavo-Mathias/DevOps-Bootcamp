@@ -37,7 +37,7 @@ jobs:
               uses: docker/build-push-action@v6
               with:
                 push: true
-                tags: gustavo1304/bootcamp-encontros-tech:v${{ github.run_number }} 
+                tags: gustavo1304/encontros-tech:v${{ github.run_number }}
                 file: ./02-encontros-tech/Dockerfile
                 context: ./02-encontros-tech
 
@@ -61,26 +61,14 @@ jobs:
                   --namespace=default \
                   --dry-run=client -o yaml | kubectl apply -f -
 
-            - name: Delete Existing Deployment (if stuck)
-              run: |
-                if kubectl get deployment encontros-tech -n default &> /dev/null; then
-                  echo "Deployment exists, deleting to start fresh..."
-                  kubectl delete deployment encontros-tech -n default --ignore-not-found=true
-                  sleep 5
-                fi
-              continue-on-error: true
-
             - name: Apply Kubernetes Manifests
               run: kubectl apply -f 02-encontros-tech/k8s/manifest.yaml --namespace=default
 
             - name: Update Deployment Image
               run: |
                 kubectl set image deployment/encontros-tech \
-                  encontros-tech=gustavo1304/bootcamp-encontros-tech:v${{ github.run_number }} \
-                  --namespace=default --record
-
-            - name: Restart Deployment
-              run: kubectl rollout restart deployment/encontros-tech --namespace=default
+                  encontros-tech=gustavo1304/encontros-tech:v${{ github.run_number }} \
+                  --namespace=default
 
             - name: Wait for Rollout to Complete
               run: kubectl rollout status deployment/encontros-tech --namespace=default --timeout=5m
