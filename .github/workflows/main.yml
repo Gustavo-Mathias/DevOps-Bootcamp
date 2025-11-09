@@ -1,4 +1,3 @@
-
 name: CI-CD
 on:
   push:
@@ -28,25 +27,19 @@ jobs:
             - run: echo "Executar o Docker Build"
             - run: echo "Enviar a Imagem Docker para o Docker Hub"
 
-            - name: Debug - Check if secrets exist
-              run: |
-                echo "Checking secrets..."
-                if [ -z "${{ secrets.DOCKERHUB_USERNAME }}" ]; then
-                  echo "ERROR: DOCKERHUB_USERNAME secret is not set or is empty"
-                else
-                  echo "DOCKERHUB_USERNAME is set"
-                fi
-                if [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
-                  echo "ERROR: DOCKERHUB_TOKEN secret is not set or is empty"
-                else
-                  echo "DOCKERHUB_TOKEN is set"
-                fi
-
             - name: Login to Docker Hub
               uses: docker/login-action@v3
               with:
-                username: ${{ secrets.DOCKERHUB_USERNAME }}
+                username: ${{ vars.DOCKERHUB_USERNAME }}
                 password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+            - name: Build and push
+              uses: docker/build-push-action@v6
+              with:
+                push: true
+                tags: fabricioveronez/bootcamp-encontros-tech:v${{ github.run_number }} 
+                file: ./02-encontros-tech/Dockerfile
+                context: ./02-encontros-tech
 
     CD:
         runs-on: ubuntu-latest
