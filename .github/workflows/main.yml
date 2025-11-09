@@ -45,6 +45,20 @@ jobs:
         runs-on: ubuntu-latest
         needs: [CI]
         steps:
-            - run: echo "Obter o código"
-            - run: echo "Configurar o Kubeconfig"
-            - run: echo "Executar o apply"
+            - name: Checkout
+              uses: actions/checkout@v5
+
+            - name: Set Kubernetes Context
+              uses: azure/k8s-set-context@v4
+              with:
+                method: kubeconfig
+                kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+            - name: Deploy to Kubernetes Cluster
+              uses: azure/k8s-deploy@v5
+              with:
+                namespace: default
+                manifests: |
+                  02-encontros-tech/k8s/manifest.yaml
+                images: gustavo1304/bootcamp-encontros-tech:v${{ github.run_number }}
+                strategy: basic
