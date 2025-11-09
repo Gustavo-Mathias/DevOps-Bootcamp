@@ -81,7 +81,7 @@ jobs:
         needs: [CD-Homolog]
         environment:
           name: producao
-          url: http://143.244.201.33
+          url: http://178.128.132.17
         steps:
             - name: Checkout
               uses: actions/checkout@v5
