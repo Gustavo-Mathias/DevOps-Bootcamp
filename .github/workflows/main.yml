@@ -46,7 +46,7 @@ jobs:
         needs: [CI]
         environment:
           name: homolog
-          url: http://homolog.encontros-tech.example.com
+          url: http://174.138.110.241
         steps:
             - name: Checkout
               uses: actions/checkout@v5
@@ -81,7 +81,7 @@ jobs:
         needs: [CD-Homolog]
         environment:
           name: production
-          url: http://129.212.196.133
+          url: http://143.244.201.33
         steps:
             - name: Checkout
               uses: actions/checkout@v5
